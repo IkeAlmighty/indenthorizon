@@ -1,0 +1,22 @@
+{
+  "name": "spaceshipcoder",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "ikealmighty",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./server/src/server.js",
+    "dev-server": "nodemon ./server/src/server.js",
+    "dev-client": "nodemon ./client/interactive-login.js",
+    "seed": "node ./server/src/seed.js",
+    "client": "nodemon ../client/interactive-login.js",
+    "build-client": "node ./server/src/buildClientAPI.js",
+    "login": "node ../client/login.js",
+    "run-example": "node ./client/index.js ./scripts/example.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

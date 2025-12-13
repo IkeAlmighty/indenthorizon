@@ -1,0 +1,16 @@
+{
+  "name": "spaceshipcoder",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "ikealmighty",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {},
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1",
+    "socket.io": "^4.8.1"
+  }
+}
