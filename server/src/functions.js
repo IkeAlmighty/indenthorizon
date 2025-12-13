@@ -7,6 +7,30 @@ export function getTick() {
 }
 export function getStatus(_id) {}
 
+// low level module management
+export function attachModule(_id, moduleId, slot) {}
+export function detachModuleById(_id, moduleId) {} // goes to cargo if there is space, otherwise jettisoned
+export function detachModuleBySlot(_id, slot) {} // goes to cargo if there is space, otherwise jettisoned
+
+export function getModuleStatus(_id, slot) {}
+export function getAllModules(_id) {}
+
+export function activateModule(_id, slot) {}
+export function deactivateModule(_id, slot) {}
+export function activateModuleById(_id, moduleId) {}
+export function deactivateModuleById(_id, moduleId) {}
+
+export function setModuleTarget(_id, slot, targetId) {}
+export function clearModuleTarget(_id, slot) {}
+export function setModuleTargetCoordinates(_id, slot, x, y, z) {}
+export function clearModuleTargetCoordinates(_id, slot) {}
+
+// slots are just for convenience, modules can be managed by ID as well
+export function setSlot(_id, slot, moduleId) {}
+export function clearSlot(_id, slot) {}
+
+// Higher level functions, they essentially are helper functions that call
+// the lower level functions above:
 export function setForwardThrust(_id, power) {}
 export function setBackwardThrust(_id, power) {}
 export function setLateralThrust(_id, power) {}
@@ -54,25 +78,3 @@ export function manufactureItem(_id, schematicId, quantity) {}
 export function synthesizeMaterial(_id, schematicId, quantity) {}
 
 export function getAllSchematics(_id) {}
-
-// low level module management
-export function attachModule(_id, moduleId, slot) {}
-export function detachModuleById(_id, moduleId) {} // goes to cargo if there is space, otherwise jettisoned
-export function detachModuleBySlot(_id, slot) {} // goes to cargo if there is space, otherwise jettisoned
-
-export function getModuleStatus(_id, slot) {}
-export function getAllModules(_id) {}
-
-export function activateModule(_id, slot) {}
-export function deactivateModule(_id, slot) {}
-export function activateModuleById(_id, moduleId) {}
-export function deactivateModuleById(_id, moduleId) {}
-
-export function setModuleTarget(_id, slot, targetId) {}
-export function clearModuleTarget(_id, slot) {}
-export function setModuleTargetCoordinates(_id, slot, x, y, z) {}
-export function clearModuleTargetCoordinates(_id, slot) {}
-
-// slots are just for convenience, modules can be managed by ID as well
-export function setSlot(_id, slot, moduleId) {}
-export function clearSlot(_id, slot) {}

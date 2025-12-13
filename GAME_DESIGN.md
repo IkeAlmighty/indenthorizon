@@ -44,7 +44,7 @@ Schematics are required for the creation of new modules & synthesized materials.
 
 Each drone-ship is made up of a number of modules. New modules can be discovered through trade, research, and of course pirating or scavenging. In order to create a module, you need to first acquire the schematic nessecary. You can reverse engineer modules by placing them in a research module, which will eventually spit out a schematic for the module.
 
-As mentioned in the _Mining Materials_ section,
+As mentioned in the _Mining Materials_ section, there are thousands of modules to be discovered in the Indent Horizon universe, all created from different materials.
 
 ## Player API Reference
 
