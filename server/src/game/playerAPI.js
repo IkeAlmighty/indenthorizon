@@ -1,4 +1,4 @@
-import { entities, events, tick } from "./engine.js";
+import { tick, entities } from "../engine/core.js";
 
 // EXPORTED FUNCTIONS (USER WRITTEN PROGRAMS CAN USE, SO SENSITIVE FUNCTIONS NOT ALLOWED)
 

@@ -7,12 +7,12 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node ./server/src/server.js",
-    "dev-server": "cd server && nodemon ./src/server.js",
-    "dev-client": "cd client && nodemon ./client/interactive-login.js",
+    "start": "node ./server/src/game/main.js",
+    "dev-server": "cd server && nodemon ./src/game/main.js",
+    "dev-client": "nodemon ./client/login.js",
     "seed": "node ./server/src/seed.js",
-    "client": "nodemon ../client/interactive-login.js",
-    "build-client": "node ./server/src/buildClientAPI.js",
+    "client": "node ./client/login.js",
+    "build-client": "node ./server/src/game/buildClientAPI.js",
     "login": "node ../client/login.js",
     "run-example": "node ./client/index.js ./scripts/example.js"
   },

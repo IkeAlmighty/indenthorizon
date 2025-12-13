@@ -1,6 +1,6 @@
 /**
  *
- * @param {Entity} api - represents all the possible ways an entity (like a
+ * @param {Entity} ship - represents all the possible ways an entity (like a
  * ship) can interact with the game.
  */
-export default function step(api) {}
+export default function loop(ship) {}

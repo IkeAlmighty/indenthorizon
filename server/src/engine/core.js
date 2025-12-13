@@ -1,5 +1,5 @@
 import { Entity, initDatabase } from "./database.js";
-import * as entityFunctions from "./functions.js";
+import entityFunctions from "./operations.js";
 
 export const events = []; // global event queue
 export const observers = {}; // eventKey -> [callback1, callback2, ...]
@@ -95,9 +95,7 @@ async function step() {
   }
 }
 
-export async function startEngine() {
-  console.log("Engine started");
-
+export async function startCoreRuntime() {
   // load in entities from database:
   await initDatabase();
   await loadEntitiesFromDatabase();

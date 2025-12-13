@@ -1,13 +1,13 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { engine, startEngine } from "./engine.js";
+import { engine } from "./core.js";
 import { Entity, Session, User } from "./database.js";
 import { randomBytes } from "crypto";
 
 const sessions = new Map();
 
-async function updateSessions() {
+async function syncSessions() {
   const allSessions = await Session.find({});
 
   allSessions.forEach((session) => {
@@ -27,7 +27,7 @@ const io = new Server(httpServer, {
 // Socket.IO authentication middleware
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  console.log("token on middleware: ", token);
+
   const session = sessions.get(token);
 
   if (!session) return next(new Error("Invalid token"));
@@ -84,14 +84,15 @@ app.post("/login", async (req, res) => {
   });
 
   await session.save();
-  await updateSessions();
+  await syncSessions();
 
   res.json({ token, message: "Login successful" });
 });
 
 // Socket.IO events
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id} (user id: ${socket.userId})`);
+io.on("connection", async (socket) => {
+  const entity = await Entity.findById(socket.entityId);
+  console.log(`Entity connected: ${entity.name}`);
 
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
@@ -105,20 +106,12 @@ io.on("connection", (socket) => {
       ack({ ok: false, error: error.message });
     }
   });
-
-  socket.on("getEntityState", (data) => {
-    // TODO Fetch and send entity status back to client
-    const { entityId } = data;
-  });
 });
 
 // Start server
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  try {
-    console.log("starting...");
-    startEngine();
-  } catch (err) {
-    console.error("Failed to start engine:", err);
-  }
-});
+export function startServer(callback) {
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    callback();
+  });
+}
