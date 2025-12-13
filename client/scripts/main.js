@@ -7,5 +7,5 @@ export default async function step(api) {
   //  your code here
   const tick = await api.getTick();
 
-  if (tick % 20 == 0) console.log("20 ticks have passed.");
+  if (tick % 20 == 0) console.log("20 ticks have passed. :)");
 }

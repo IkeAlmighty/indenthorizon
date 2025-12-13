@@ -8,8 +8,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server/src/server.js",
-    "dev-server": "nodemon ./server/src/server.js",
-    "dev-client": "nodemon ./client/interactive-login.js",
+    "dev-server": "cd server && nodemon ./src/server.js",
+    "dev-client": "cd client && nodemon ./client/interactive-login.js",
     "seed": "node ./server/src/seed.js",
     "client": "nodemon ../client/interactive-login.js",
     "build-client": "node ./server/src/buildClientAPI.js",

@@ -42,14 +42,10 @@ async function main() {
 
     // Run npm run main.js <token> (but since no main.js, run the client)
     // Assuming "main" script is added to package.json as "node client/client.js examplePrograms/explore.js"
-    const child = spawn(
-      "node",
-      ["client/index.js", "client/scripts/main.js", token],
-      {
-        stdio: "inherit",
-        env: { ...process.env, TOKEN: token },
-      }
-    );
+    const child = spawn("node", ["index.js", "scripts/main.js", token], {
+      stdio: "inherit",
+      env: { ...process.env, TOKEN: token },
+    });
 
     child.on("close", (code) => {
       process.exit(code);
