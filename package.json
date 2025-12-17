@@ -8,15 +8,18 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server/src/game/main.js",
-    "dev-server": "cd server && nodemon ./src/game/main.js",
-    "dev-client": "nodemon ./client/login.js",
-    "seed": "node ./server/src/seed.js",
+    "dev-server": "cd server && cross-env NODE_ENV=development nodemon ./src/game/main.js",
+    "dev-client": "cross-env NODE_ENV=development npx wait-on http://localhost:3000 && nodemon ./client/login.js",
+    "seed": "node ./server/src/game/seed.js",
+    "dev-seed": "cross-env NODE_ENV=development node ./server/src/game/seed.js",
     "client": "node ./client/login.js",
     "build-client": "node ./server/src/game/buildClientAPI.js",
     "login": "node ../client/login.js",
     "run-example": "node ./client/index.js ./scripts/example.js"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "wait-on": "^9.0.3"
   }
 }
