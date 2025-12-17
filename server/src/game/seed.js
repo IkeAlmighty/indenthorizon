@@ -1,4 +1,8 @@
-import { initDatabase, Entity, User } from "./database.js";
+import { initDatabase } from "../engine/db/connection.js";
+import { Entity } from "../engine/db/models/entity.js";
+import { User } from "../engine/db/models/user.js";
+
+const development = process.env.NODE_ENV === "development";
 
 const sampleEntities = [
   {
@@ -7,6 +11,13 @@ const sampleEntities = [
     name: "SS Driftwood",
     cargo: ["fuel", "supplies"],
     classification: "ship",
+  },
+  {
+    x: 50,
+    y: -25,
+    name: "Sol",
+    cargo: [],
+    classification: "star",
   },
   {
     x: 100,
@@ -41,6 +52,14 @@ const sampleEntities = [
 async function seed() {
   try {
     await initDatabase();
+
+    console.log("Clearing existing data...");
+
+    // dev only
+    if (development) {
+      await User.deleteMany({});
+      await Entity.deleteMany({});
+    }
 
     console.log("Seeding user...");
 

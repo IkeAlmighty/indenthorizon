@@ -1,5 +1,6 @@
-import { Entity, initDatabase } from "./database.js";
-import entityFunctions from "./operations.js";
+import { initDatabase } from "./db/connection.js";
+import { Entity } from "./db/models/entity.js";
+import { playerFunctions, devFunctions } from "./functions.js";
 
 export const events = []; // global event queue
 export const observers = {}; // eventKey -> [callback1, callback2, ...]
@@ -9,17 +10,23 @@ export let tick = 0;
 const MAX_QUEUE_PER_ENTITY = 20;
 export const TICK_DURATION_MS = 100;
 
-// a queue of program ops. Organized as a dictionary of entity _ids, with a single operation at each value.
-// operations match map to functions available to players.
-const ops = Object.create(null); // entity_Id -> [{ opName, args }]
+// Maps of entity ids to function queues per entity. The server places functions from dev entities in
+// the dev function queue, which has access to all possible functions in the game.
+const functionQueues = Object.create(null); // entity_Id -> [{ fnName, args }]
+const devFunctionQueues = Object.create(null);
 
 export const engine = {
-  pushOp(entityId, functionName, args) {
+  pushOp(entityId, functionName, args, isDev = false) {
     const now = Date.now();
+    let queue;
 
-    if (!ops[entityId]) ops[entityId] = [];
-
-    const queue = ops[entityId];
+    if (isDev) {
+      if (!devFunctionQueues[entityId]) devFunctionQueues[entityId] = [];
+      queue = devFunctionQueues[entityId];
+    } else {
+      if (!functionQueues[entityId]) functionQueues[entityId] = [];
+      queue = functionQueues[entityId];
+    }
 
     if (queue.length >= MAX_QUEUE_PER_ENTITY) {
       throw new Error(
@@ -48,10 +55,20 @@ export const engine = {
 
 async function loadEntitiesFromDatabase() {
   let entitiesList = await Entity.find({}).lean();
+  console.log(`Loaded ${entitiesList.length} entities from database.`);
   for (let e of entitiesList) entities[e._id] = e;
 }
 
-// TODO: create a cleanup function to be ran when the engine shuts down
+// Save entities back to the database
+export async function updateEntitiesToDatabase() {
+  console.log("Saving entities to database...");
+  // Save any necessary data back to the database
+  for (let entityId in entities) {
+    let entityData = entities[entityId];
+    console.log(entityData);
+    await Entity.updateOne({ _id: entityId }, entityData);
+  }
+}
 
 /**
  * One tick of the engine. Executes at most one op per entity per tick window.
@@ -73,7 +90,10 @@ async function step() {
 
   // Execute all operations:
   const now = Date.now();
-  for (let [entityId, queue] of Object.entries(ops)) {
+  for (let [entityId, queue] of [
+    ...Object.entries(functionQueues),
+    ...Object.entries(devFunctionQueues),
+  ]) {
     if (!queue.length) continue;
 
     if (queue[0].ts > now) return; // only run if the scheduled time has arrived
@@ -81,12 +101,13 @@ async function step() {
     const op = queue.shift();
 
     try {
-      const fn = entityFunctions[op.functionName];
+      const fn =
+        playerFunctions[op.functionName] || devFunctions[op.functionName];
       if (typeof fn !== "function") {
         throw new Error(`Unknown op ${op.functionName}`);
       }
 
-      const result = await fn(...op.args);
+      const result = await fn(entityId, ...op.args);
 
       op.resolve(result);
     } catch (err) {
@@ -100,16 +121,20 @@ export async function startCoreRuntime() {
   await initDatabase();
   await loadEntitiesFromDatabase();
 
-  while (true) {
-    const start = Date.now();
+  console.log("Starting core runtime...");
 
-    await step();
+  setImmediate(async () => {
+    while (true) {
+      const start = Date.now();
 
-    const duration = Date.now() - start;
-    await new Promise((r) =>
-      setTimeout(r, Math.max(0, TICK_DURATION_MS - duration))
-    );
+      await step();
 
-    tick++;
-  }
+      const duration = Date.now() - start;
+      await new Promise((r) =>
+        setTimeout(r, Math.max(0, TICK_DURATION_MS - duration))
+      );
+
+      tick++;
+    }
+  });
 }

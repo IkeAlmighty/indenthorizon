@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { engine } from "./core.js";
-import { Entity, Session, User } from "./database.js";
+import { Entity, Session, User } from "./db/models/index.js";
 import { randomBytes } from "crypto";
 
 const sessions = new Map();
@@ -54,6 +54,10 @@ app.get("/", (req, res) => {
   res.json({ message: "SpaceshipCoder Server" });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).send();
+});
+
 app.post("/login", async (req, res) => {
   // Validate credentials and entityName
   const { username, password, entityName } = req.body;
@@ -92,10 +96,9 @@ app.post("/login", async (req, res) => {
 // Socket.IO events
 io.on("connection", async (socket) => {
   const entity = await Entity.findById(socket.entityId);
-  console.log(`Entity connected: ${entity.name}`);
 
   socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
+    console.log(`Entity disconnected: ${entity.name}`);
   });
 
   socket.on("op", async (functionName, args, ack) => {
@@ -109,9 +112,11 @@ io.on("connection", async (socket) => {
 });
 
 // Start server
-export function startServer(callback) {
-  httpServer.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    callback();
+export async function startServer() {
+  return await new Promise((resolve) => {
+    httpServer.listen(PORT, async () => {
+      console.log(`Server running on port ${PORT}`);
+      resolve();
+    });
   });
 }
