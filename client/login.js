@@ -64,4 +64,17 @@ async function main() {
   }
 }
 
-main();
+let healthy = false;
+
+setInterval(async () => {
+  try {
+    await fetch("http://localhost:3000/health");
+    if (!healthy) {
+      main();
+      healthy = true;
+    }
+  } catch {
+    healthy = false;
+    console.log("Server is not responding.");
+  }
+}, 1000);
